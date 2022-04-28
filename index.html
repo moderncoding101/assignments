@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>
-        Welcome to Modern Coding
-    </title>
+    <title>Modern Coding Assignments</title>
 </head>
+<body>
+    <h1>Welcome to Modern Coding!</h1>
+    <label for="assignments"> Choose an assignment:</label>
+    <select id="assignment"> 
+        <option value="None">None</option>
+        <option value="strings">Strings</option>
+    </select>
+    <br>
+    <h2>Run your solution:</h2>
+    <iframe src="https://trinket.io/embed/python/ad4cd3996b" width="75%" height="356" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
+    <br>
+    <textarea id="submission" rows="15" cols="50">Enter Submission here</textarea>
+    <button onclick="evaluate(submission)">Check my Answer</button>
+</body>
 
 
 </html>
