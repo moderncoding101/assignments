@@ -19,6 +19,7 @@
     <!-- Markup -->
     <header>
         <h1>Assignment Evaluator</h1>
+        <select name="assignment_selector" id="assignment_selector"></select>
     </header>
 
     <main>
@@ -67,7 +68,32 @@
         const script = document.getElementById("script");
         const output = document.getElementById("stdout");
 
+        /**
+         * @type HTMLSelectElement
+         * */
+        const assignmentSelector = document.getElementById("assignment_selector");
+        let assignments = []
+
+        assignmentSelector.addEventListener('change', (event) => {
+            const chosenAssignment = assignments.find(assignment => assignment.name == event.target.value)
+
+            editor.setValue(chosenAssignment.exampleScript)
+        })
+
         async function main() {
+            const res = fetch("assignments.json");
+            assignments = await (await res).json();
+
+            assignmentSelector.innerHTML += `
+                <option value="First assignment">None</option>
+            `
+
+            assignments.forEach(assignment => {
+                assignmentSelector.innerHTML += `
+                    <option value="${assignment.name}">${assignment.name}</option>
+                `
+            });
+
             let pyodide = await loadPyodide({
                 stdin: window.prompt,
                 stdout: (message) => {
@@ -85,6 +111,7 @@
                     `;
                 }
             });
+
 
             runButton.removeAttribute("disabled");
 

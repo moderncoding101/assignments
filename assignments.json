@@ -2,7 +2,7 @@
     {
         "name": "Ascii characters and binary",
         "description": "",
-        "exampleScript": "\n",
+        "exampleScript": "hello\n",
         "expectedOutput": ""
     },
     {
