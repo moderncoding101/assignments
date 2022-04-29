@@ -6,10 +6,103 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Coding evaluator</title>
+    <!-- Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="global.css">
+    <!-- Monaco styles -->
+    <link rel="stylesheet" data-name="vs/editor/editor.main" href="monaco/min/vs/editor/editor.main.css">
 </head>
 
 <body>
-    <h1>Evaluator</h1>
+    <!-- Markup -->
+    <header>
+        <h1>Assignment Evaluator</h1>
+    </header>
+
+    <main>
+        <section class="editor">
+            <div class="controls">
+                <div class="array-of-buttons">
+                    <button id="uploadButton" disabled>Upload solution</button>
+                    <button id="runButton" disabled>Run</button>
+                    <button id="stopButton" disabled>Stop</button>
+                </div>
+                <button id="scriptClearButton" disabled>Clear</button>
+            </div>
+            <div id="monaco-container"></div>
+        </section>
+        <section class="terminal">
+            <div class="controls">
+                <button id="outputClearButton" disabled>Clear</button>
+            </div>
+            <div class="output-container">
+                <output id="stdout"></output>
+            </div>
+        </section>
+    </main>
+
+    <!-- Monaco scripts -->
+    <script>
+        var require = { paths: { vs: 'monaco/min/vs' } };
+    </script>
+    <script src="monaco/min/vs/loader.js"></script>
+    <script src="monaco/min/vs/editor/editor.main.nls.js"></script>
+    <script src="monaco/min/vs/editor/editor.main.js"></script>
+    <!-- Functionality -->
+    <script type="text/javascript">
+        var editor = monaco.editor.create(document.getElementById('monaco-container'), {
+            value: ['import sys', 'print(sys.version)', ''].join('\n'),
+            language: 'python',
+            autoIndent: true,
+            formatOnPaste: true,
+            formatOnType: true,
+            minimap: {
+                enabled: false
+            }
+        });
+
+        const runButton = document.getElementById("runButton");
+        const script = document.getElementById("script");
+        const output = document.getElementById("stdout");
+
+        async function main() {
+            let pyodide = await loadPyodide({
+                stdin: window.prompt,
+                stdout: (message) => {
+                    output.innerHTML += `
+                        <div class="output-item normal">
+                            <pre>${message}</pre>
+                        </div>
+                    `;
+                },
+                stderr: (message) => {
+                    output.innerHTML += `
+                        <div class="output-item error">
+                            <pre>${message}</pre>
+                        </div>
+                    `;
+                }
+            });
+
+            runButton.removeAttribute("disabled");
+
+            runButton.addEventListener("click", () => {
+                try {
+                    pyodide.runPython(editor.getValue());
+                } catch (error) {
+                    output.innerHTML += `
+                        <div class="output-item error">
+                            <pre>${error}</pre>
+                        </div>
+                    `;
+                }
+            });
+        };
+
+        main();
+    </script>
 </body>
 
 </html>
